@@ -1,24 +1,14 @@
-const db = require("../data/helpers/projectModel");
+const db = require("../accounts/accounts-router");
 
-function validateId(req, res, next) {
-  const { id } = req.params;
-  db.get(id)
-    .then(post => {
-      console.log("post", post);
-      if (typeof post === "object") {
-        if (!post) {
-          return next(`No project exists with the id of ${id}`);
-        }
-        req.post = post;
-        next();
-      } else {
-        res.status(404).json({ message: "Invalid  ID" });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({ message: "Invalid  ID", err });
-    });
+async function validateId(req, res, next) {
+  try {
+    const account = await db("accounts")
+      .where("id", req.params.id)
+      .first();
+    res.json(account);
+  } catch (err) {
+    next(`No account found with the id of ${req.params.id}`);
+  }
 }
 
 module.exports = validateId;
