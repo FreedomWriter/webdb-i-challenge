@@ -8,8 +8,13 @@ const validateID = require("../middlewares/validateId");
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
+  console.log(req.query);
   try {
-    res.json(await db("accounts"));
+    res.json(
+      await db("accounts")
+        .limit(req.query.limit)
+        .orderBy("name", req.query.orderBy)
+    );
   } catch (err) {
     next(err);
   }
